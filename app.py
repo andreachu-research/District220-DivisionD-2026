@@ -82,6 +82,7 @@ st.set_page_config(page_title="District 220 Division D | Toastmasters", page_ico
 st.markdown("""
 <style>
 .stApp {background:#fff;color:#102c46;}
+[data-testid="stToolbar"], .stAppToolbar {display:none!important;}
 .block-container {max-width:1280px;padding-top:2rem;}
 h1,h2,h3 {color:#102c46;}
 .banner {padding:36px 40px;border-radius:12px;color:white;margin-bottom:20px;
