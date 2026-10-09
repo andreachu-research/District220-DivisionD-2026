@@ -8,7 +8,6 @@ from pathlib import Path
 from html import escape
 import base64
 import mimetypes
-from urllib.parse import urlparse
 import streamlit as st
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -26,7 +25,6 @@ CONTESTS = [
         "date_time": "Wed, Oct 14, 2026 | 6 – 8 pm",
         "venue": "Room 401-F at Martin Luther King Jr. Library",
         "address": "901 G St NW, Washington, DC 20001",
-        "details_url": "https://www.apple.com",
         "note": "Halloween-themed Area Contest",
         "image": "assets/contest_photo.png",
         "spotlight": True,
@@ -37,7 +35,6 @@ CONTESTS = [
         "date_time": "Saturday, Oct 17, 2026 | 2 –4 pm",
         "venue": "Large Meeting Room at Southwest Library",
         "address": "900 Wesley Pl SW, Washington, DC 20024",
-        "details_url": "",
         "image": "assets/contest_photo.png",
         "spotlight": False,
     },
@@ -47,7 +44,6 @@ CONTESTS = [
         "date_time": "Sunday, Oct 25, 2026 | 2 – 4 pm",
         "venue": "Lower-Level Meeting Room at Cleveland Park Library",
         "address": "3310 Connecticut Ave NW, Washington, DC 20008",
-        "details_url": "",
         "image": "assets/contest_photo.png",
         "spotlight": False,
     },
@@ -57,7 +53,6 @@ CONTESTS = [
         "date_time": "Sunday, Dec 6, 2026 | 2 – 4 pm",
         "venue": "Meeting Room 1 at Georgetown Neighborhood Library",
         "address": "3260 R St NW, Washington, DC 20007",
-        "details_url": "",
         "image": "assets/contest_photo.png",
         "spotlight": False,
     },
@@ -107,9 +102,6 @@ h1,h2,h3 {color:#102c46;}
 .contest-card .contest-note {color:#822039;font-size:.95rem;font-weight:600;margin:-7px 0 8px;}
 .contest-card p {color:#596679;margin:6px 0;}
 .contest-card .venue-address {display:block;margin:3px 0 0 1.55rem;font-size:.9rem;}
-.card-details {display:block;text-align:center;margin-top:12px;color:#10344e;}
-.card-details.disabled {color:#737c89;}
-.card-links {margin-top:auto;padding-top:10px;}
 @media(max-width:1000px) {.contest-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:600px) {.contest-grid {grid-template-columns:1fr;}}
 .footer {background:#10344e;color:white;text-align:center;padding:18px;
@@ -126,20 +118,12 @@ button[role="tab"][aria-selected="true"] {color:#822039;}
 def badge(text):
     st.markdown(f'<span class="badge">{escape(text)}</span>', unsafe_allow_html=True)
 
-def card_link(label, url, css):
-    parsed = urlparse(url)
-    if parsed.scheme in {"http", "https"} and parsed.netloc:
-        return f'<a class="{css}" href="{escape(url, quote=True)}" target="_blank" rel="noopener noreferrer">{escape(label)}</a>'
-    return f'<span class="{css} disabled" aria-disabled="true">{escape(label)}</span>'
-
-
 def contest_card(contest):
     image = BASE_DIR / contest["image"]
     mime = mimetypes.guess_type(image.name)[0] or "image/png"
     encoded = base64.b64encode(image.read_bytes()).decode("ascii")
     spotlight = contest["spotlight"]
     badge_html = '<span class="badge">CONTEST SPOTLIGHT</span>' if spotlight else ''
-    details = card_link("View Contest Details", contest["details_url"], "card-details")
     note = contest.get("note", "")
     note_html = f'<p class="contest-note">{escape(note)}</p>' if note else ""
     address = contest.get("address", "")
@@ -148,8 +132,7 @@ def contest_card(contest):
     {badge_html}<img src="data:{mime};base64,{encoded}" alt="Speaker at a library event">
     <h3>{escape(contest['title'])}</h3>{note_html}
     <p>📅 {escape(contest['date_time'])}</p>
-    <p>📍 {escape(contest['venue'])}{address_html}</p>
-    <div class="card-links">{details}</div></article>'''
+    <p>📍 {escape(contest['venue'])}{address_html}</p></article>'''
 
 contests, coming_soon = st.tabs(["Table Topics Contests", "Coming Soon"])
 
